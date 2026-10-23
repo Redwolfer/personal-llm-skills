@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import json
 import re
 from pathlib import Path
 
@@ -22,16 +21,12 @@ SKILL_PATH = ROOT / "SKILL.md"
 SKILL = read_package_file(SKILL_PATH)
 README = read_package_file(ROOT / "README.md")
 CHANGELOG = read_package_file(ROOT / "CHANGELOG.md")
-try:
-    PLUGIN = json.loads(read_package_file(ROOT / ".claude-plugin" / "plugin.json"))
-except json.JSONDecodeError as error:
-    raise SystemExit(f"Fix the JSON in .claude-plugin/plugin.json: {error}")
-try:
-    CURSOR_PLUGIN = json.loads(
-        read_package_file(ROOT / ".cursor-plugin" / "plugin.json")
-    )
-except json.JSONDecodeError as error:
-    raise SystemExit(f"Fix the JSON in .cursor-plugin/plugin.json: {error}")
+for path in ROOT.rglob("*"):
+    if path.is_file() and any(
+        part.lower() in {".claude-plugin", ".cursor-plugin"}
+        for part in path.relative_to(ROOT).parts
+    ):
+        raise SystemExit(f"Remove plugin metadata from the standalone skill: {path.relative_to(ROOT)}")
 
 
 def require_match(match: re.Match[str] | None, message: str) -> re.Match[str]:
@@ -61,8 +56,6 @@ changelog_version = require_match(
 package_versions = {
     skill_version,
     changelog_version,
-    str(PLUGIN.get("version", "")),
-    str(CURSOR_PLUGIN.get("version", "")),
 }
 if len(package_versions) != 1:
     raise SystemExit(
@@ -72,12 +65,6 @@ if len(package_versions) != 1:
 skill_files = {path.relative_to(ROOT) for path in ROOT.rglob("SKILL.md")}
 if SKILL_PATH.is_symlink() or skill_files != {Path("SKILL.md")}:
     raise SystemExit("Keep one regular SKILL.md at the repo root")
-if PLUGIN.get("skills") != ["./"]:
-    raise SystemExit("Point the Claude plugin skill loader at the repo root")
-if CURSOR_PLUGIN.get("name") != "humanizer":
-    raise SystemExit("Set the Cursor plugin name to humanizer")
-if "skills" in CURSOR_PLUGIN:
-    raise SystemExit("Omit skills from the Cursor plugin so it loads the root SKILL.md")
 
 skill_description = " ".join(
     require_match(
@@ -85,19 +72,8 @@ skill_description = " ".join(
         "Write the SKILL.md description as an indented block",
     ).group(1).split()
 )
-MARKETPLACE = json.loads(read_package_file(ROOT / ".claude-plugin" / "marketplace.json"))
-package_descriptions = {
-    str(PLUGIN.get("description", "")),
-    str(CURSOR_PLUGIN.get("description", "")),
-    *(str(plugin.get("description", "")) for plugin in MARKETPLACE.get("plugins", [])),
-}
-if len(package_descriptions) != 1 or not skill_description.startswith(
-    next(iter(package_descriptions))
-):
-    raise SystemExit(
-        "Use the first sentence of the SKILL.md description in every plugin manifest: "
-        f"{sorted(package_descriptions)}"
-    )
+if not skill_description:
+    raise SystemExit("Write a nonempty skill description")
 
 skill_patterns = dict(
     (int(number), name)

@@ -14,7 +14,7 @@ Preserve facts, executable code, commands, identifiers, paths, links, schemas, a
 - Keep each skill in a folder named after its frontmatter `name`, with `SKILL.md` at the folder root.
 - Use relative links for bundled references. Keep required resources inside the skill folder so a copied or uploaded package works on its own.
 - Keep the root README as the project index. Use each skill's README for its installation and usage details.
-- Keep the standalone skill layout. Add provider plugin manifests only when the user requests them.
+- Keep the standalone skill layout. Provider plugin metadata must stay outside skill folders and skill ZIPs. If the user requests a plugin, package it separately.
 
 ## Writing
 
@@ -54,7 +54,7 @@ Every new or imported skill must ship with `dist/<skill-name>.zip` and `dist/<sk
 
 Edit skill sources first. When files inside a skill package change, regenerate its ZIP and text bundle in `dist/`. Root README, AGENTS.md, CLAUDE.md, GEMINI.md, or HANDOFF.md edits alone do not require repackaging.
 
-For every ZIP, include the complete skill folder under one top-level directory named after its frontmatter `name`. Use forward slashes in entry names. Exclude Git metadata, caches, and generated distribution files. Preserve required resources, attribution, and licenses. Importing an upstream Git checkout must not put its `.git/` directory or `.git` file into either distribution file.
+For every ZIP, include the complete standalone skill folder under one top-level directory named after its frontmatter `name`. Use forward slashes in entry names. Exclude Git metadata, caches, generated distribution files, and provider plugin metadata such as `.claude-plugin/` and `.cursor-plugin/`. Claude skill uploads reject plugin manifests. Remove imported plugin metadata from the skill source before packaging. Preserve required resources, attribution, and licenses. Importing an upstream Git checkout must not put its `.git/` directory or `.git` file into either distribution file.
 
 For every text bundle, include `SKILL.md`, every file in `references/`, required text resources, and all applicable licenses. Label sections with their original paths relative to the skill folder. Write UTF-8 without a BOM and include a short loading instruction for Claude, ChatGPT, and Gemini. Keep runtime instructions separate from supporting license text.
 
@@ -66,6 +66,6 @@ For the text bundle, include `SKILL.md` and every file in `references/`, includi
 
 Match checks to the change. For documentation, check local links and Markdown formatting. For skill changes, also check frontmatter, reference reachability, and the behavior affected by the edit.
 
-For every new, imported, or changed skill, check that both required distribution files exist. Compare the ZIP entries with the source files and compare each labeled text section with its source. Check the single-root archive layout, forward slash paths, excluded Git metadata, and included licenses. List new distribution files in the root README.
+For every new, imported, or changed skill, check that both required distribution files exist. Compare the ZIP entries with the source files and compare each labeled text section with its source. Check the single-root archive layout, forward slash paths, excluded Git and plugin metadata, and included licenses. Run `python -m unittest discover -s tests -p dist_tests.py` from the collection root. List new distribution files in the root README.
 
 Report what was actually checked. File validation does not establish successful installation in a provider's account. If a script or validator is unavailable, state the limitation without claiming it passed. Run any new or changed executable helper before handing it over.

@@ -1,8 +1,8 @@
-# Humanizer 
+# Humanizer
 
 sponsored by [cfo.ai](https://cfo.ai)
 
-[![GitHub stars](https://img.shields.io/github/stars/blader/humanizer?style=flat)](https://github.com/blader/humanizer/stargazers) [![skills.sh installs](https://skills.sh/b/blader/humanizer)](https://skills.sh/blader/humanizer) 
+[![GitHub stars](https://img.shields.io/github/stars/blader/humanizer?style=flat)](https://github.com/blader/humanizer/stargazers) [![skills.sh installs](https://skills.sh/b/blader/humanizer)](https://skills.sh/blader/humanizer)
 
 
 Humanizer makes AI-written text sound like a person wrote it, without changing what it says. It is built on Wikipedia's [Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing), the guide Wikipedia editors use to catch AI-generated text, and it works in Claude Code, Codex, and any other agent that supports skills.
@@ -31,34 +31,33 @@ Humanizer checks for [26 patterns](#the-26-patterns) in all.
 
 ## Installation
 
-Once installed, the skill answers to `/humanizer`.
+This collection packages Humanizer as a standalone skill for Claude, ChatGPT/Codex, and Gemini. It includes no provider plugin manifest.
 
-### Claude Code
+### Install on this computer
 
-```text
-/plugin marketplace add blader/humanizer
-/plugin install humanizer@humanizer
+Run from the collection root on Windows:
+
+```powershell
+.\install.ps1 -Skills humanizer -Providers all -NonInteractive
 ```
 
-The plugin answers to `/humanizer:humanizer`. It needs Claude Code 2.1.142 or newer; on older versions, use `npx skills add blader/humanizer --global --agent claude-code`.
+Choose `claude`, `chatgpt`, or `gemini` instead of `all` to target a detected local client. You can also copy this complete skill folder to the personal location below.
 
-### Codex
+| Provider | Personal skill location |
+|---|---|
+| Claude Code | `~/.claude/skills/humanizer/` |
+| ChatGPT / Codex local skills | `~/.agents/skills/humanizer/` |
+| Gemini CLI | `~/.gemini/skills/humanizer/` |
 
-```bash
-npx skills add blader/humanizer --global --agent codex
-```
+Ask the assistant to use the Humanizer skill. Invocation syntax depends on the host; Claude Code supports `/humanizer`, while Codex supports `$humanizer`.
 
-### Claude.ai and Claude Desktop
+### Claude skill uploads
 
-Download this repository as a ZIP (**Code → Download ZIP**) and upload it as a skill in Settings.
+Upload the collection's `dist/humanizer.zip` through Claude's skill uploader. It contains one `humanizer/` folder with `SKILL.md`, supporting files, and the MIT license. A ZIP containing `.claude-plugin/plugin.json` is rejected as a skill. Use this collection's rebuilt archive instead of a plugin package or an upstream repository ZIP.
 
-### Other agents
+### Chat uploads
 
-```bash
-npx skills add blader/humanizer --global --agent '*'
-```
-
-This installs Humanizer for every agent the Skills CLI supports, including Gemini CLI, GitHub Copilot, and Windsurf. Leave off `--global` in any command above to install it only in the current project. For an agent the Skills CLI does not know, copy `SKILL.md` into its skill folder.
+For a Claude, ChatGPT, or Gemini chat that accepts text files, attach `dist/humanizer-chat.txt` and ask the assistant to follow its `SKILL.md` section. Local copying does not register a skill in a web account.
 
 ## Usage
 

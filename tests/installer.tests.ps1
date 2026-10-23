@@ -81,6 +81,9 @@ try {
                     (Get-FileHash -LiteralPath (Join-Path $installed.Destination $relative)).Hash) "Humanizer content changed for $providerId."
             }
             Assert-True (-not (Test-Path -LiteralPath (Join-Path $installed.Destination '.git'))) 'The upstream repository metadata was installed.'
+            foreach ($folder in @('.claude-plugin', '.cursor-plugin')) {
+                Assert-True (-not (Test-Path -LiteralPath (Join-Path $installed.Destination $folder))) "Plugin metadata was installed for $providerId."
+            }
         }
     }
     Test-Case 'Install Council with its complete Humanizer and workflows for all three providers' {

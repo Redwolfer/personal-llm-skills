@@ -57,7 +57,7 @@ The `dist/` folder holds distribution files generated from that source:
 
 - [git-worklog.zip](dist/git-worklog.zip) contains the skill folder for native installation where supported.
 - [git-worklog-chat.txt](dist/git-worklog-chat.txt) combines the entry point and all references into one labeled text file for instruction uploads.
-- [humanizer.zip](dist/humanizer.zip) contains the official Humanizer skill folder, supporting files, and MIT license. Git metadata is excluded.
+- [humanizer.zip](dist/humanizer.zip) contains the standalone Humanizer skill, supporting files, and MIT license. Git metadata and provider plugin manifests are excluded, so the archive can be uploaded as a skill.
 - [humanizer-chat.txt](dist/humanizer-chat.txt) combines the Humanizer entry point and MIT license for instruction uploads.
 - [council.zip](dist/council.zip) contains the council workflows, style guide, complete bundled Humanizer, and its MIT license.
 - [council-chat.txt](dist/council-chat.txt) includes the same workflow instructions and references as labeled text sections for chat uploads.
@@ -143,7 +143,7 @@ The installer uses the same `humanizer/SKILL.md` for all three providers. It acc
 
 For a Claude, ChatGPT, or Gemini chat with file uploads, attach [humanizer-chat.txt](dist/humanizer-chat.txt) and ask: `Follow the SKILL.md section in the attached Humanizer bundle to rewrite this text. Preserve its facts and match my voice.` This loads the instructions for that chat. Use [humanizer.zip](dist/humanizer.zip) where native skill uploads are supported, or the local installer for automatic skill discovery in supported clients.
 
-The official source folder retains its upstream documentation and plugin metadata. This collection installs skills through local folders and supports only Claude, ChatGPT, and Gemini. It does not run a plugin marketplace installer. Preserve [humanizer/LICENSE](humanizer/LICENSE) when sharing a copy.
+Humanizer's prompt and MIT license retain their upstream content. This collection removes provider plugin metadata and packages Humanizer as a standalone skill for Claude, ChatGPT, and Gemini. Upload [dist/humanizer.zip](dist/humanizer.zip) to Claude's skill uploader; an upstream repository ZIP may contain plugin manifests that the uploader rejects. Preserve [humanizer/LICENSE](humanizer/LICENSE) when sharing a copy.
 
 ## Work with ChatGPT, Claude, or Gemini
 
@@ -176,13 +176,14 @@ Keep each skill self-contained. Store detailed rules in its references and link 
 For every new, imported, or changed skill package:
 
 1. Check its metadata, relative links, and required behavior.
-2. Create or rebuild `dist/<skill-name>.zip` with one top-level skill folder and forward slashes in archive paths. Exclude Git metadata, caches, and generated distribution files.
+2. Create or rebuild `dist/<skill-name>.zip` with one top-level skill folder and forward slashes in archive paths. Exclude Git metadata, caches, generated distribution files, and provider plugin metadata. Remove imported `.claude-plugin/` and `.cursor-plugin/` folders from standalone skill sources.
 3. Create or rebuild `dist/<skill-name>-chat.txt` with a labeled section for the entry point, every reference, required text resources, and applicable licenses. Use UTF-8 without a BOM.
 4. Compare both outputs with the source files and list them in this README. The work is complete when both distribution files are present and verified.
 
-Run the installer tests with:
+Run the distribution and installer tests with:
 
 ```powershell
+python -m unittest discover -s tests -p dist_tests.py
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\installer.tests.ps1
 ```
 
