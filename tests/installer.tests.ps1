@@ -83,6 +83,28 @@ try {
             Assert-True (-not (Test-Path -LiteralPath (Join-Path $installed.Destination '.git'))) 'The upstream repository metadata was installed.'
         }
     }
+    Test-Case 'Install Council with its complete Humanizer and workflows for all three providers' {
+        $collectionRoot = Split-Path -Parent $PSScriptRoot
+        $council = @(Get-SkillCatalog $collectionRoot | Where-Object Name -eq 'council')
+        Assert-True ($council.Count -eq 1) 'Council is missing from the installer catalog.'
+        $requiredFiles = @('SKILL.md', 'README.md', 'Research.md', 'CouncilMembers.md', 'RoundStructure.md',
+            'OutputFormat.md', 'Humanize.md', 'GenZVoice.md', 'Workflows\Quick.md', 'Workflows\Debate.md',
+            'references\humanizer.md', 'references\humanizer.LICENSE', 'agents\openai.yaml')
+        foreach ($providerId in @('claude', 'chatgpt', 'gemini')) {
+            $fixtureHome = Join-Path $testRoot ('council-profile-' + $providerId)
+            $commands = @{}; $commands[$providerId] = 'C:\fixture\client.exe'
+            $provider = Get-ProviderInventory -HomeDirectory $fixtureHome -Commands $commands -DesktopApps @() |
+                Where-Object Id -eq $providerId
+            $installed = Install-LocalSkill -Skill $council[0] -Provider $provider
+            Assert-True ($installed.Status -eq 'Installed') "Council was not installed for $providerId."
+            foreach ($relative in $requiredFiles) {
+                Assert-True ((Get-FileHash -LiteralPath (Join-Path $council[0].Source $relative)).Hash -eq
+                    (Get-FileHash -LiteralPath (Join-Path $installed.Destination $relative)).Hash) "Council lost or changed $relative for $providerId."
+            }
+            $again = Install-LocalSkill -Skill $council[0] -Provider $provider
+            Assert-True ($again.Status -eq 'Unchanged') "Council was rewritten on repeat installation for $providerId."
+        }
+    }
     Test-Case 'Select several skills by number and name without duplicates' {
         $selected = @(Resolve-InstallerSelection -Selection '2,alpha,2' -Items $catalog)
         Assert-True (($selected.Name -join ',') -eq 'alpha,beta') 'Selection was incomplete or duplicated.'

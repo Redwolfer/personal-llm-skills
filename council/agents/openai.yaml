@@ -1,0 +1,4 @@
+interface:
+  display_name: "Council"
+  short_description: "Researched debate with Indonesian Gen Z voices"
+  default_prompt: "Use $council to research this question and compare perspectives in humanized Indonesian Gen Z tables."

@@ -5,40 +5,44 @@ Last contributor: ChatGPT.
 
 ## Current status
 
-The installer discovers both Git worklog and the user-added official Humanizer 3.1.0 folder. Users can install either skill or both for detected Claude Code, ChatGPT/Codex, and Gemini CLI clients. Desktop-only Claude or Gemini is listed for manual upload.
+The collection contains council, git-worklog, and humanizer. Each has a ZIP and text bundle in dist/. The installer supports the three provider families: Claude, ChatGPT/Codex, and Gemini.
 
-Git worklog still bundles Humanizer 3.1.0 and its MIT license. Shared project rules remain in AGENTS.md, imported by CLAUDE.md and GEMINI.md.
+Council instructions are in English. Results default to Indonesian Gen Z chat style. Every original prose cell uses the complete bundled Humanizer 3.1.0 in embedded mode, the Indonesian voice guide, and a final Humanizer and evidence check. This includes research notes, roster descriptions, member responses, limitations, and synthesis.
 
-Every new or imported skill must now include `dist/<skill-name>.zip` and `dist/<skill-name>-chat.txt`. Changes to a skill's source require rebuilding both. Both current skills have these files.
+Both council workflows attempt research across primary sources, Reddit, X/Twitter, and other relevant websites. Findings identify source types and distinguish anecdotes from verified facts. Missing access, no browsing, and simulated execution remain visible in the research table. QUICK uses one round; DEBATE uses three separate round tables.
 
 ## Active work
 
-No active tasks or file reservations. The distribution rule and Humanizer packages are complete. The user requested a commit and push directly on master using the existing Git credentials. No real client installations were performed.
+No active file reservations or delegated tasks. Council adaptation, distribution files, and validation are complete. The user authorized a direct commit and push on master using the existing Git credentials.
 
 ## Latest files
 
-- [AGENTS.md](AGENTS.md): require both distribution files for new, imported, or changed skills and verify them before completion.
-- [CLAUDE.md](CLAUDE.md) and [GEMINI.md](GEMINI.md): follow the shared packaging requirement. The old Claude restriction on editing dist/ was removed; commits and pushes still require a user request.
-- [README.md](README.md): list all four distribution files and explain the packaging requirement and Humanizer upload bundle.
-- [humanizer.zip](dist/humanizer.zip) and [humanizer-chat.txt](dist/humanizer-chat.txt): new distribution files for the imported skill.
-- [HANDOFF.md](HANDOFF.md): current work snapshot.
+- [council/SKILL.md](council/SKILL.md): portable entry point, capability-based execution, and mandatory writing pipeline.
+- [council/Research.md](council/Research.md): primary sources, Reddit, X/Twitter, other sites, verification, and access limits.
+- [council/Humanize.md](council/Humanize.md), [council/GenZVoice.md](council/GenZVoice.md), and [council/OutputFormat.md](council/OutputFormat.md): full Humanizer integration, Indonesian chat style, and table schemas.
+- [council/CouncilMembers.md](council/CouncilMembers.md), [council/RoundStructure.md](council/RoundStructure.md), and [council/Workflows/](council/Workflows/): research-grounded briefs and round execution.
+- [council/README.md](council/README.md): installation and usage for the three providers.
+- [council/references/humanizer.md](council/references/humanizer.md) and [council/references/humanizer.LICENSE](council/references/humanizer.LICENSE): complete upstream Humanizer 3.1.0 and MIT license.
+- [council/agents/openai.yaml](council/agents/openai.yaml): generated OpenAI display metadata.
+- [tests/installer.tests.ps1](tests/installer.tests.ps1): Council installation and repeat-install checks using isolated profiles for each provider.
+- [README.md](README.md): Council index, installer example, and distribution links.
+- [dist/council.zip](dist/council.zip) and [dist/council-chat.txt](dist/council-chat.txt): source-matched distribution files.
 
 ## Distribution status
 
-Humanizer's ZIP contains 14 source files under a single humanizer/ directory, including its SKILL.md, supporting files, and MIT license. The upstream .git/ directory is excluded. Its text bundle includes loading instructions and labeled SKILL.md and LICENSE sections, written as UTF-8 without a BOM.
+Council's ZIP contains all 13 source files under council/ with forward slash paths and one SKILL.md. The text bundle contains all 13 files as labeled sections, including workflows, voice guidance, complete Humanizer, display metadata, and the MIT license. Its loading instructions preserve research, execution disclosure, Humanizer, and Indonesian output requirements. Text is UTF-8 without a BOM.
 
-Neither skill's source files were edited for this packaging update. Git worklog's existing ZIP/text distribution files are unchanged. Both skills now have the required ZIP and text bundle in dist/.
+Council's Humanizer and license match humanizer/SKILL.md and humanizer/LICENSE byte for byte. Existing Git worklog and standalone Humanizer sources and distribution files are unchanged.
 
-Humanizer is imported as ordinary source files in the parent repository. Its original Git metadata is preserved locally at .git/upstream-repositories/humanizer.git so the upstream history remains recoverable. That backup is excluded from commits and distribution files. Do not add Humanizer as a Git link or submodule.
+Humanizer is tracked as ordinary files. Its original Git metadata remains preserved locally at .git/upstream-repositories/humanizer.git. Do not add it as a Git link or submodule.
 
 ## Verification
 
-Current checks: the Humanizer ZIP file list and all 14 payloads match the source. Its archive has one skill root, forward slash paths, and no Git metadata. Both labeled text sections match the source bytes exactly, and the text bundle is UTF-8 without a BOM. All current skills have both required distribution files. Documentation links passed. Git diff --check passed for maintained project files; the upstream README's two existing trailing spaces were retained.
+- Nineteen installer tests passed on Windows PowerShell 5.1. Council's 13 required files matched after installation for each simulated provider, and repeat installation reported unchanged.
+- The skill-creator quick validator passed for council. PyYAML was installed only in the task's scratch validation directory; the user's Python environment was not changed.
+- All 13 ZIP payloads and 13 labeled text sections match their source bytes. Archive layout, UTF-8 encoding, complete Humanizer, MIT license, and Council Markdown links passed.
+- Read-only inventory lists council, git-worklog, and humanizer. A real-machine Council preview passed without writing to client profiles.
+- Workflow review covered QUICK and DEBATE, source diversity, blocked sources, absent browsing, simulated reviewers, English instructions, Indonesian output, and the final evidence check after styling.
+- Root documentation links and staged Git whitespace checks passed before the requested commit.
 
-Previous installer checks: eighteen tests passed on Windows PowerShell 5.1 using temporary fixture profiles. They include the official Humanizer package installed separately for each simulated provider, with matching SKILL.md, LICENSE, and agents/openai.yaml hashes. CRLF discovery passed with and without a BOM, and discovery preserved source bytes. Installer tests were not repeated for this documentation and packaging update.
-
-Humanizer's scripts/validate-package.py previously passed under Python 3.14: package v3.1.0 is valid. Its upstream source files remain unchanged; the original Git metadata has been preserved in the parent repository metadata directory. The official and Git worklog copies of the Humanizer prompt match after line-ending normalization.
-
-Read-only inventory and an explicit preview selecting both skills previously passed on the actual machine. No skills were installed or updated in real client profiles during testing.
-
-The actual inventory found Claude Code and ChatGPT/Codex for local installation. A Gemini desktop application was found, but the Gemini CLI command was not detected. Native provider loading after installation has not been tested. Upstream marketplace checks were not run because this update uses local skill folders and does not change or publish the official package.
+The machine detects Claude Code and ChatGPT/Codex for local installation. A Gemini desktop application is detected, but Gemini CLI is absent. Installer tests use simulated provider profiles. No real client installations or live model-output evaluations in the three provider accounts were performed.

@@ -10,6 +10,8 @@ Start with the [Git worklog instructions](git-worklog/SKILL.md) or its [usage re
 
 [Humanizer](humanizer/SKILL.md) rewrites prose while preserving its facts and the writer's voice. The official 3.1.0 source is available as a separate skill, including its [MIT license](humanizer/LICENSE) and OpenAI display metadata. Select `humanizer` in the installer to use it for writing outside Git worklog. Git worklog keeps its own bundled copy, so either skill can be installed on its own.
 
+[Council](council/README.md) researches a question across primary sources, Reddit, X/Twitter, and other relevant websites before comparing four perspectives. QUICK uses one round and DEBATE uses three. Results are Indonesian Gen Z tables, with the complete bundled Humanizer applied to all prose and a final evidence check after styling. Sessions without browsing or independent agents disclose those limits.
+
 ## Project layout
 
 ```text
@@ -34,11 +36,19 @@ personal-llm-skills/
 |   |-- LICENSE
 |   `-- agents/
 |       `-- openai.yaml
+|-- council/
+|   |-- SKILL.md
+|   |-- README.md
+|   |-- Workflows/
+|   |-- references/
+|   `-- agents/
 `-- dist/
     |-- git-worklog.zip
     |-- git-worklog-chat.txt
     |-- humanizer.zip
-    `-- humanizer-chat.txt
+    |-- humanizer-chat.txt
+    |-- council.zip
+    `-- council-chat.txt
 ```
 
 Skill folders contain the editable source. The root [AGENTS.md](AGENTS.md) describes how to maintain the project.
@@ -49,8 +59,10 @@ The `dist/` folder holds distribution files generated from that source:
 - [git-worklog-chat.txt](dist/git-worklog-chat.txt) combines the entry point and all references into one labeled text file for instruction uploads.
 - [humanizer.zip](dist/humanizer.zip) contains the official Humanizer skill folder, supporting files, and MIT license. Git metadata is excluded.
 - [humanizer-chat.txt](dist/humanizer-chat.txt) combines the Humanizer entry point and MIT license for instruction uploads.
+- [council.zip](dist/council.zip) contains the council workflows, style guide, complete bundled Humanizer, and its MIT license.
+- [council-chat.txt](dist/council-chat.txt) includes the same workflow instructions and references as labeled text sections for chat uploads.
 
-Every skill must have `dist/<skill-name>.zip` and `dist/<skill-name>-chat.txt`. Create both when adding a new or imported skill, and rebuild them whenever its package content changes. All four current files include the applicable Humanizer instructions and MIT license.
+Every skill must have `dist/<skill-name>.zip` and `dist/<skill-name>-chat.txt`. Create both when adding a new or imported skill, and rebuild them whenever its package content changes. All current distribution files include the applicable Humanizer instructions and MIT license.
 
 ## Install skills on this computer
 
@@ -86,6 +98,14 @@ To install Humanizer by itself, or both skills together:
 .\install.ps1 -Skills humanizer -Providers all -NonInteractive
 .\install.ps1 -Skills git-worklog,humanizer -Providers all -NonInteractive
 ```
+
+To install Council for detected local clients:
+
+```powershell
+.\install.ps1 -Skills council -Providers all -NonInteractive
+```
+
+See [Council's setup and usage](council/README.md) for each provider, chat uploads, execution modes, and research access limits.
 
 `-Skills` and `-Providers` accept comma-separated values or `all`. Provider IDs are `claude`, `chatgpt`, and `gemini`. For providers, `all` includes only detected clients that support local skill folders. Use `-RepositoryRoot` to read skills from another collection.
 
