@@ -17,6 +17,11 @@ personal-llm-skills/
 |-- CLAUDE.md
 |-- GEMINI.md
 |-- HANDOFF.md
+|-- install.ps1
+|-- scripts/
+|   `-- SkillInstaller.psm1
+|-- tests/
+|   `-- installer.tests.ps1
 |-- git-worklog/
 |   |-- SKILL.md
 |   |-- README.md
@@ -34,6 +39,58 @@ The `dist/` folder holds distribution files generated from that source:
 - [git-worklog-chat.txt](dist/git-worklog-chat.txt) combines the entry point and all references into one labeled text file for instruction uploads.
 
 Both files include Humanizer and its MIT license. Make changes in `git-worklog/`, then regenerate the distribution files when package content changes.
+
+## Install skills on this computer
+
+Run the Windows installer from the project folder. It requires PowerShell 5.1 or later and no extra modules.
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\install.ps1
+```
+
+The installer lists detected clients and available skills. Choose one or more skills, then one or more providers. Enter numbers or names separated by commas, `all` for the whole list, or `q` to cancel. Add another skill folder with a matching `SKILL.md` name to make it appear in the catalog. Skill folders inside `skills/` are also supported.
+
+For a read-only inventory:
+
+```powershell
+.\install.ps1 -List
+```
+
+To preview installation without writing skill copies:
+
+```powershell
+.\install.ps1 -Skills all -Providers all -NonInteractive -WhatIf
+```
+
+To install Git worklog for selected providers:
+
+```powershell
+.\install.ps1 -Skills git-worklog -Providers claude,chatgpt -NonInteractive
+```
+
+`-Skills` and `-Providers` accept comma-separated values or `all`. Provider IDs are `claude`, `chatgpt`, and `gemini`. For providers, `all` includes only detected clients that support local skill folders. Use `-RepositoryRoot` to read skills from another collection.
+
+Existing copies are left unchanged when they match the source. Different copies are skipped unless `-Update` is supplied:
+
+```powershell
+.\install.ps1 -Skills all -Providers all -NonInteractive -Update
+```
+
+An update first verifies a staged copy, then saves the existing installation under the provider's `skill-backups/` directory. References, hidden support files, and licenses are included. Git metadata is excluded. Linked paths are rejected. Restart the client or reload its skill list after installation.
+
+### Client detection and destinations
+
+Detection checks CLI commands on PATH, common executable locations, registered Windows applications, Windows app packages, and running client processes. Configuration folders alone do not count as an installed client. The installer does not start clients, sign in, download applications, or change their credentials.
+
+| Provider | Local installation target | Client requirement |
+|---|---|---|
+| Claude | `%USERPROFILE%\.claude\skills\<skill-name>` | Claude Code. Desktop-only Claude is listed as requiring manual upload. |
+| ChatGPT | `%USERPROFILE%\.agents\skills\<skill-name>` | ChatGPT/Codex desktop or Codex CLI. |
+| Gemini | `%USERPROFILE%\.gemini\skills\<skill-name>` | Gemini CLI. A desktop application alone is listed as requiring manual upload. |
+
+These targets follow the official [Claude Code](https://code.claude.com/docs/en/skills), [OpenAI](https://learn.chatgpt.com/docs/build-skills), and [Gemini CLI](https://geminicli.com/docs/cli/skills/) skill locations. Claude Cowork and cloud sessions use account-level skills and do not read the personal Claude Code folder. Gemini CLI also discovers `.agents/skills`, so a ChatGPT-targeted copy may be visible to Gemini; that shared alias takes precedence over `.gemini/skills` at the same scope. A matching shared copy is reported as unchanged. If it differs from the source, the Gemini install stops and asks you to update the shared copy first. When both providers are selected with `-Update`, ChatGPT is processed before Gemini.
+
+For a client marked `Manual upload required`, follow the [skill's upload instructions](git-worklog/README.md). Local file copying does not register skills in a web account or Gemini Gem. Application detection reports local evidence; it does not verify account access or client version compatibility.
 
 ## Work with ChatGPT, Claude, or Gemini
 
@@ -70,4 +127,10 @@ After changing a skill package:
 3. Rebuild its text bundle with a labeled section for the entry point and every reference, including licenses.
 4. Compare both outputs with the source files.
 
-The project currently has no checked-in build script or automated test suite. Package checks establish file integrity and structure; live installation checks must be reported separately.
+Run the installer tests with:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\installer.tests.ps1
+```
+
+The tests use a temporary fixture home to cover multi-skill and multi-provider selection, detection, copying, previews, update backups, failure cleanup, and path validation. They do not change real client installations. The project has no checked-in distribution build script. Package checks establish file integrity and structure; live provider loading must be reported separately.

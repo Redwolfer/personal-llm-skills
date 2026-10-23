@@ -5,26 +5,28 @@ Last contributor: ChatGPT.
 
 ## Current status
 
-The project is located in `personal-llm-skills/`. Git worklog includes its Humanizer 3.1.0 dependency and MIT license. The ZIP and text bundle are in `dist/`.
+The project includes a Windows PowerShell installer for selecting one or more skills and detected providers. Claude Code and ChatGPT/Codex support local installation. Gemini uses local installation when its CLI is detected; desktop-only Claude or Gemini is listed for manual upload.
 
-Root documentation covers the project layout, mandatory Humanizer use for all work, shared instructions for the three providers, and a handoff process. CLAUDE.md and GEMINI.md import AGENTS.md and provide provider-specific notes for their respective tools.
+Git worklog still bundles Humanizer 3.1.0 and its MIT license. Shared project rules remain in AGENTS.md, imported by CLAUDE.md and GEMINI.md.
 
 ## Active work
 
-No active tasks or file reservations. The next contributor can take the next user request after reading AGENTS.md and the relevant source files.
+No active tasks or file reservations. The installer has been implemented and checked. The user can run install.ps1 to choose the skills and providers to install.
 
 ## Latest files
 
-- [README.md](README.md): project overview, provider entry points, and collaboration workflow.
-- [AGENTS.md](AGENTS.md): shared project rules, mandatory Humanizer use, and handoff practices.
-- [CLAUDE.md](CLAUDE.md): Claude entry point importing the shared rules, plus Claude Code notes on Windows PowerShell 5.1 packaging, Humanizer source, and chat language.
-- [GEMINI.md](GEMINI.md): Gemini entry point importing shared rules, plus Gemini notes on PowerShell 5.1 isolated sessions, BOM-free bundling, Humanizer source, and chat language.
+- [install.ps1](install.ps1): interactive selection, inventory, explicit options, and preview mode.
+- [scripts/SkillInstaller.psm1](scripts/SkillInstaller.psm1): discovery, local installation, hash verification, and update backups.
+- [tests/installer.tests.ps1](tests/installer.tests.ps1): isolated installer checks using temporary profiles.
+- [README.md](README.md): commands, detection rules, destinations, backup behavior, and limitations.
 - [HANDOFF.md](HANDOFF.md): current work snapshot.
 
 ## Distribution status
 
-This update changes project-level documentation only. The Git worklog package sources and distribution files were not changed by this documentation task.
+This task adds project-level installation tooling and tests. Git worklog package sources and the existing ZIP/text distribution files are unchanged.
 
 ## Verification
 
-The 23 local links, 2 native imports, and Markdown fences in the root documentation passed verification. The user requested publication on the existing master branch using the configured Git credentials, without a new branch or pull request. Check Git history and origin/master for publication status. Live provider sessions have not been tested.
+Sixteen installer tests passed on Windows PowerShell 5.1 using temporary fixture profiles, including two skills installed for all three simulated providers. Read-only detection and both interactive and explicit-option previews passed on the actual machine. No skills were installed or updated in real client profiles during testing.
+
+The actual inventory found Claude Code and ChatGPT/Codex for local installation. A Gemini desktop application was found, but the Gemini CLI command was not detected. Native provider loading after installation has not been tested.
