@@ -16,6 +16,8 @@ function Get-SkillCatalog {
         $manifest = Join-Path $folder.FullName 'SKILL.md'
         if (-not (Test-Path -LiteralPath $manifest -PathType Leaf)) { continue }
         $text = Get-Content -LiteralPath $manifest -Raw -Encoding UTF8
+        # Normalize metadata for parsing while keeping the installed files byte for byte.
+        $text = $text.TrimStart([char]0xFEFF).Replace("`r`n", "`n")
         $header = [regex]::Match($text, '(?s)\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)')
         if (-not $header.Success) { throw "Invalid frontmatter: $manifest" }
         $nameMatch = [regex]::Match($header.Groups[1].Value, '(?m)^name:[ \t]*(?<quote>["'']?)(?<name>[a-z0-9]+(?:-[a-z0-9]+)*)\k<quote>[ \t]*$')

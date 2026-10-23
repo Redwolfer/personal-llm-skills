@@ -50,7 +50,13 @@ The report parameter question applies when generating a worklog. Maintaining or 
 
 ## Distribution files
 
+Every new or imported skill must ship with `dist/<skill-name>.zip` and `dist/<skill-name>-chat.txt` in the same change. Creating or importing a skill includes creating both distribution files. Do not mark the work complete until both files exist and match the source. This applies to skills at the project root and inside `skills/`.
+
 Edit skill sources first. When files inside a skill package change, regenerate its ZIP and text bundle in `dist/`. Root README, AGENTS.md, CLAUDE.md, GEMINI.md, or HANDOFF.md edits alone do not require repackaging.
+
+For every ZIP, include the complete skill folder under one top-level directory named after its frontmatter `name`. Use forward slashes in entry names. Exclude Git metadata, caches, and generated distribution files. Preserve required resources, attribution, and licenses. Importing an upstream Git checkout must not put its `.git/` directory or `.git` file into either distribution file.
+
+For every text bundle, include `SKILL.md`, every file in `references/`, required text resources, and all applicable licenses. Label sections with their original paths relative to the skill folder. Write UTF-8 without a BOM and include a short loading instruction for Claude, ChatGPT, and Gemini. Keep runtime instructions separate from supporting license text.
 
 For the Git worklog ZIP, include the complete `git-worklog/` folder under one top-level directory. Use forward slashes in entry names. Include one discoverable `SKILL.md`, every reference, the skill README, and the Humanizer license. Keep project-level documentation and `dist/` out of that ZIP.
 
@@ -60,6 +66,6 @@ For the text bundle, include `SKILL.md` and every file in `references/`, includi
 
 Match checks to the change. For documentation, check local links and Markdown formatting. For skill changes, also check frontmatter, reference reachability, and the behavior affected by the edit.
 
-When rebuilding distribution files, compare the ZIP entries with the source files and compare each labeled text section with its source. Check the single-root archive layout and the bundled Humanizer license.
+For every new, imported, or changed skill, check that both required distribution files exist. Compare the ZIP entries with the source files and compare each labeled text section with its source. Check the single-root archive layout, forward slash paths, excluded Git metadata, and included licenses. List new distribution files in the root README.
 
 Report what was actually checked. File validation does not establish successful installation in a provider's account. If a script or validator is unavailable, state the limitation without claiming it passed. Run any new or changed executable helper before handing it over.

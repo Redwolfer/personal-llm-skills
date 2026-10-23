@@ -13,6 +13,7 @@ These notes apply to Gemini CLI and Gemini coding environments. Shared rules sta
 - `Compress-Archive` writes backslashes in ZIP entry names on Windows. Build `dist/git-worklog.zip` using Python's `zipfile` module and verify entries use forward slashes starting with `git-worklog/`. Python 3.14 and `openpyxl` are installed.
 - PowerShell 5.1 cmdlets like `Set-Content -Encoding utf8` prepend a byte order mark. Write `dist/git-worklog-chat.txt` using Python to maintain UTF-8 without a BOM.
 - Check `git status` before editing root documentation and preserve existing changes. Avoid committing or pushing unless requested.
+- Create both `dist/<skill-name>.zip` and `dist/<skill-name>-chat.txt` whenever creating or importing a skill, and rebuild them when its source changes. Follow AGENTS.md for packaging checks.
 - The user writes in casual Indonesian. Respond in Indonesian in chat, and write files in English except for Git worklog report content.
 - When running or testing the Git worklog workflow, always prompt for the date range and author in chat before invoking `git log`.
 - Update HANDOFF.md before finishing any turn that modifies files, listing the exact checks that were run.

@@ -8,6 +8,8 @@ A personal collection of skills for Claude, ChatGPT, and Gemini. Each skill has 
 
 Start with the [Git worklog instructions](git-worklog/SKILL.md) or its [usage reference](git-worklog/references/usage.md). The skill README covers installation for the three supported providers.
 
+[Humanizer](humanizer/SKILL.md) rewrites prose while preserving its facts and the writer's voice. The official 3.1.0 source is available as a separate skill, including its [MIT license](humanizer/LICENSE) and OpenAI display metadata. Select `humanizer` in the installer to use it for writing outside Git worklog. Git worklog keeps its own bundled copy, so either skill can be installed on its own.
+
 ## Project layout
 
 ```text
@@ -26,9 +28,17 @@ personal-llm-skills/
 |   |-- SKILL.md
 |   |-- README.md
 |   `-- references/
+|-- humanizer/
+|   |-- SKILL.md
+|   |-- README.md
+|   |-- LICENSE
+|   `-- agents/
+|       `-- openai.yaml
 `-- dist/
     |-- git-worklog.zip
-    `-- git-worklog-chat.txt
+    |-- git-worklog-chat.txt
+    |-- humanizer.zip
+    `-- humanizer-chat.txt
 ```
 
 Skill folders contain the editable source. The root [AGENTS.md](AGENTS.md) describes how to maintain the project.
@@ -37,8 +47,10 @@ The `dist/` folder holds distribution files generated from that source:
 
 - [git-worklog.zip](dist/git-worklog.zip) contains the skill folder for native installation where supported.
 - [git-worklog-chat.txt](dist/git-worklog-chat.txt) combines the entry point and all references into one labeled text file for instruction uploads.
+- [humanizer.zip](dist/humanizer.zip) contains the official Humanizer skill folder, supporting files, and MIT license. Git metadata is excluded.
+- [humanizer-chat.txt](dist/humanizer-chat.txt) combines the Humanizer entry point and MIT license for instruction uploads.
 
-Both files include Humanizer and its MIT license. Make changes in `git-worklog/`, then regenerate the distribution files when package content changes.
+Every skill must have `dist/<skill-name>.zip` and `dist/<skill-name>-chat.txt`. Create both when adding a new or imported skill, and rebuild them whenever its package content changes. All four current files include the applicable Humanizer instructions and MIT license.
 
 ## Install skills on this computer
 
@@ -68,6 +80,13 @@ To install Git worklog for selected providers:
 .\install.ps1 -Skills git-worklog -Providers claude,chatgpt -NonInteractive
 ```
 
+To install Humanizer by itself, or both skills together:
+
+```powershell
+.\install.ps1 -Skills humanizer -Providers all -NonInteractive
+.\install.ps1 -Skills git-worklog,humanizer -Providers all -NonInteractive
+```
+
 `-Skills` and `-Providers` accept comma-separated values or `all`. Provider IDs are `claude`, `chatgpt`, and `gemini`. For providers, `all` includes only detected clients that support local skill folders. Use `-RepositoryRoot` to read skills from another collection.
 
 Existing copies are left unchanged when they match the source. Different copies are skipped unless `-Update` is supplied:
@@ -91,6 +110,20 @@ Detection checks CLI commands on PATH, common executable locations, registered W
 These targets follow the official [Claude Code](https://code.claude.com/docs/en/skills), [OpenAI](https://learn.chatgpt.com/docs/build-skills), and [Gemini CLI](https://geminicli.com/docs/cli/skills/) skill locations. Claude Cowork and cloud sessions use account-level skills and do not read the personal Claude Code folder. Gemini CLI also discovers `.agents/skills`, so a ChatGPT-targeted copy may be visible to Gemini; that shared alias takes precedence over `.gemini/skills` at the same scope. A matching shared copy is reported as unchanged. If it differs from the source, the Gemini install stops and asks you to update the shared copy first. When both providers are selected with `-Update`, ChatGPT is processed before Gemini.
 
 For a client marked `Manual upload required`, follow the [skill's upload instructions](git-worklog/README.md). Local file copying does not register skills in a web account or Gemini Gem. Application detection reports local evidence; it does not verify account access or client version compatibility.
+
+### Use Humanizer with each provider
+
+The installer uses the same `humanizer/SKILL.md` for all three providers. It accepts Windows and Unix line endings, including UTF-8 files with a byte order mark, and preserves the source files when copying them.
+
+| Provider | Install for a detected local client | Use after installation |
+|---|---|---|
+| Claude Code | `.\install.ps1 -Skills humanizer -Providers claude -NonInteractive` | Ask Claude to use the `humanizer` skill on your text. |
+| ChatGPT / Codex | `.\install.ps1 -Skills humanizer -Providers chatgpt -NonInteractive` | Select Humanizer or ask the assistant to use it. |
+| Gemini CLI | `.\install.ps1 -Skills humanizer -Providers gemini -NonInteractive` | Ask Gemini to use the `humanizer` skill on your text. |
+
+For a Claude, ChatGPT, or Gemini chat with file uploads, attach [humanizer-chat.txt](dist/humanizer-chat.txt) and ask: `Follow the SKILL.md section in the attached Humanizer bundle to rewrite this text. Preserve its facts and match my voice.` This loads the instructions for that chat. Use [humanizer.zip](dist/humanizer.zip) where native skill uploads are supported, or the local installer for automatic skill discovery in supported clients.
+
+The official source folder retains its upstream documentation and plugin metadata. This collection installs skills through local folders and supports only Claude, ChatGPT, and Gemini. It does not run a plugin marketplace installer. Preserve [humanizer/LICENSE](humanizer/LICENSE) when sharing a copy.
 
 ## Work with ChatGPT, Claude, or Gemini
 
@@ -120,12 +153,12 @@ Always use the bundled [Humanizer guidance](git-worklog/references/humanizer.md)
 
 Keep each skill self-contained. Store detailed rules in its references and link them from `SKILL.md` where they are used. Preserve the [Humanizer license](git-worklog/references/humanizer.LICENSE) when redistributing its instructions.
 
-After changing a skill package:
+For every new, imported, or changed skill package:
 
 1. Check its metadata, relative links, and required behavior.
-2. Rebuild its ZIP with one top-level skill folder and forward slashes in archive paths.
-3. Rebuild its text bundle with a labeled section for the entry point and every reference, including licenses.
-4. Compare both outputs with the source files.
+2. Create or rebuild `dist/<skill-name>.zip` with one top-level skill folder and forward slashes in archive paths. Exclude Git metadata, caches, and generated distribution files.
+3. Create or rebuild `dist/<skill-name>-chat.txt` with a labeled section for the entry point, every reference, required text resources, and applicable licenses. Use UTF-8 without a BOM.
+4. Compare both outputs with the source files and list them in this README. The work is complete when both distribution files are present and verified.
 
 Run the installer tests with:
 
@@ -133,4 +166,4 @@ Run the installer tests with:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\installer.tests.ps1
 ```
 
-The tests use a temporary fixture home to cover multi-skill and multi-provider selection, detection, copying, previews, update backups, failure cleanup, and path validation. They do not change real client installations. The project has no checked-in distribution build script. Package checks establish file integrity and structure; live provider loading must be reported separately.
+The tests use temporary fixture homes to cover multi-skill and multi-provider selection, detection, copying, previews, update backups, failure cleanup, and path validation. They also check Windows metadata encodings and install the official Humanizer files for each simulated provider, including its license and OpenAI metadata. They do not change real client installations. The project has no checked-in distribution build script. Package checks establish file integrity and structure; live provider loading must be reported separately.

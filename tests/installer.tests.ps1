@@ -51,6 +51,38 @@ try {
         Assert-True (($catalog.Name -join ',') -eq 'alpha,beta') 'The catalog lost a skill.'
         Assert-True ($catalog[1].Description -eq 'A multiline fixture description.') 'Multiline description was not read.'
     }
+    Test-Case 'Read CRLF frontmatter with or without a UTF-8 BOM without rewriting the source' {
+        foreach ($withBom in @($false, $true)) {
+            $metadataRoot = Join-Path $testRoot ('metadata-' + $withBom)
+            $manifest = Join-Path $metadataRoot 'humanizer\SKILL.md'
+            [void][IO.Directory]::CreateDirectory((Split-Path -Parent $manifest))
+            $encoding = New-Object System.Text.UTF8Encoding($withBom)
+            [IO.File]::WriteAllText($manifest, "---`r`nname: humanizer`r`ndescription: |`r`n  Rewrite prose.`r`n  Keep the facts.`r`nlicense: MIT`r`nmetadata:`r`n  version: '3.1.0'`r`n---`r`n`r`n# Humanizer`r`n", $encoding)
+            $before = (Get-FileHash -LiteralPath $manifest).Hash
+            $found = @(Get-SkillCatalog $metadataRoot)
+            Assert-True ($found.Count -eq 1 -and $found[0].Name -eq 'humanizer') 'CRLF metadata was rejected.'
+            Assert-True ($found[0].Description -eq 'Rewrite prose. Keep the facts.') 'CRLF block description was incomplete.'
+            Assert-True ((Get-FileHash -LiteralPath $manifest).Hash -eq $before) 'Discovery rewrote source bytes.'
+        }
+    }
+    Test-Case 'Install the official Humanizer package for each supported provider in isolated profiles' {
+        $collectionRoot = Split-Path -Parent $PSScriptRoot
+        $humanizer = @(Get-SkillCatalog $collectionRoot | Where-Object Name -eq 'humanizer')
+        Assert-True ($humanizer.Count -eq 1) 'The collection does not expose Humanizer.'
+        foreach ($providerId in @('claude', 'chatgpt', 'gemini')) {
+            $fixtureHome = Join-Path $testRoot ('humanizer-profile-' + $providerId)
+            $commands = @{}; $commands[$providerId] = 'C:\fixture\client.exe'
+            $provider = Get-ProviderInventory -HomeDirectory $fixtureHome -Commands $commands -DesktopApps @() |
+                Where-Object Id -eq $providerId
+            $installed = Install-LocalSkill -Skill $humanizer[0] -Provider $provider
+            Assert-True ($installed.Status -eq 'Installed') "Humanizer was not installed for $providerId."
+            foreach ($relative in @('SKILL.md', 'LICENSE', 'agents\openai.yaml')) {
+                Assert-True ((Get-FileHash -LiteralPath (Join-Path $humanizer[0].Source $relative)).Hash -eq
+                    (Get-FileHash -LiteralPath (Join-Path $installed.Destination $relative)).Hash) "Humanizer content changed for $providerId."
+            }
+            Assert-True (-not (Test-Path -LiteralPath (Join-Path $installed.Destination '.git'))) 'The upstream repository metadata was installed.'
+        }
+    }
     Test-Case 'Select several skills by number and name without duplicates' {
         $selected = @(Resolve-InstallerSelection -Selection '2,alpha,2' -Items $catalog)
         Assert-True (($selected.Name -join ',') -eq 'alpha,beta') 'Selection was incomplete or duplicated.'
