@@ -52,6 +52,8 @@ The report parameter question applies when generating a worklog. Maintaining or 
 
 Every new or imported skill must ship with `dist/<skill-name>.zip` and `dist/<skill-name>-chat.txt` in the same change. Creating or importing a skill includes creating both distribution files. Do not mark the work complete until both files exist and match the source. This applies to skills at the project root and inside `skills/`.
 
+Also build the Gemini web exports with `python scripts/build_gemini_web.py`. Each skill gets `dist/gemini-web/<skill-name>/SKILL.md` and `dist/<skill-name>-gemini-web.zip`. The single Markdown file must retain valid frontmatter, all runtime references, and applicable licenses. Convert reference links to the embedded sections. The web ZIP contains only `SKILL.md` at its root; keep provider metadata, scripts, hidden files, and unsupported file extensions out of this export. Verify it with `python scripts/build_gemini_web.py --check` after rebuilding the canonical text bundles.
+
 Edit skill sources first. When files inside a skill package change, regenerate its ZIP and text bundle in `dist/`. Root README, AGENTS.md, CLAUDE.md, GEMINI.md, or HANDOFF.md edits alone do not require repackaging.
 
 For every ZIP, include the complete standalone skill folder under one top-level directory named after its frontmatter `name`. Use forward slashes in entry names. Exclude Git metadata, caches, generated distribution files, and provider plugin metadata such as `.claude-plugin/` and `.cursor-plugin/`. Claude skill uploads reject plugin manifests. Remove imported plugin metadata from the skill source before packaging. Preserve required resources, attribution, and licenses. Importing an upstream Git checkout must not put its `.git/` directory or `.git` file into either distribution file.
@@ -66,6 +68,6 @@ For the text bundle, include `SKILL.md` and every file in `references/`, includi
 
 Match checks to the change. For documentation, check local links and Markdown formatting. For skill changes, also check frontmatter, reference reachability, and the behavior affected by the edit.
 
-For every new, imported, or changed skill, check that both required distribution files exist. Compare the ZIP entries with the source files and compare each labeled text section with its source. Check the single-root archive layout, forward slash paths, excluded Git and plugin metadata, and included licenses. Run `python -m unittest discover -s tests -p dist_tests.py` from the collection root. List new distribution files in the root README.
+For every new, imported, or changed skill, check that both required distribution files exist. Compare the ZIP entries with the source files and compare each labeled text section with its source. Check the single-root archive layout, forward slash paths, excluded Git and plugin metadata, and included licenses. Run `python -m unittest discover -s tests -p '*tests.py'` and `python scripts/build_gemini_web.py --check` from the collection root. List new distribution files in the root README.
 
 Report what was actually checked. File validation does not establish successful installation in a provider's account. If a script or validator is unavailable, state the limitation without claiming it passed. Run any new or changed executable helper before handing it over.

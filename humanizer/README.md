@@ -57,6 +57,8 @@ Upload the collection's `dist/humanizer.zip` through Claude's skill uploader. It
 
 ### Chat uploads
 
+For Gemini web's Skills uploader, select `dist/gemini-web/humanizer/SKILL.md` from the collection. This single Markdown file includes the Humanizer instructions and MIT license. You can also select its one-skill folder or upload `dist/humanizer-gemini-web.zip`. The web ZIP contains only `SKILL.md` at its root, with no separate metadata or extensionless license file.
+
 For a Claude, ChatGPT, or Gemini chat that accepts text files, attach `dist/humanizer-chat.txt` and ask the assistant to follow its `SKILL.md` section. Local copying does not register a skill in a web account.
 
 ## Usage

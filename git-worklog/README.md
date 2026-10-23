@@ -53,6 +53,8 @@ gemini skills install ./git-worklog
 
 You can also place the folder at `~/.gemini/skills/git-worklog/` or `.gemini/skills/git-worklog/`. See the [Gemini CLI Agent Skills documentation](https://geminicli.com/docs/cli/skills/).
 
+For Gemini web's Skills uploader, select `dist/gemini-web/git-worklog/SKILL.md` from the collection as a file. It embeds every runtime reference, the complete Humanizer, and its license. You can also select that skill's folder or upload `dist/git-worklog-gemini-web.zip`, which contains only `SKILL.md` at its root. This export preserves the required date-and-author question and the report schema without uploading separate metadata or `.LICENSE` files.
+
 For a Gemini Gem, add `git-worklog-chat.txt` under Knowledge and put the loading instruction below in the Gem's Instructions field. The text file includes the entry point, every reference, and Humanizer. See Google's [Gem instructions and file guidance](https://support.google.com/gemini/answer/15235603?hl=en).
 
 ## Load the text bundle

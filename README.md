@@ -48,7 +48,14 @@ personal-llm-skills/
     |-- humanizer.zip
     |-- humanizer-chat.txt
     |-- council.zip
-    `-- council-chat.txt
+    |-- council-chat.txt
+    |-- humanizer-gemini-web.zip
+    |-- git-worklog-gemini-web.zip
+    |-- council-gemini-web.zip
+    `-- gemini-web/
+        |-- humanizer/SKILL.md
+        |-- git-worklog/SKILL.md
+        `-- council/SKILL.md
 ```
 
 Skill folders contain the editable source. The root [AGENTS.md](AGENTS.md) describes how to maintain the project.
@@ -63,6 +70,8 @@ The `dist/` folder holds distribution files generated from that source:
 - [council-chat.txt](dist/council-chat.txt) includes the same workflow instructions and references as labeled text sections for chat uploads.
 
 Every skill must have `dist/<skill-name>.zip` and `dist/<skill-name>-chat.txt`. Create both when adding a new or imported skill, and rebuild them whenever its package content changes. All current distribution files include the applicable Humanizer instructions and MIT license.
+
+Gemini web has a separate export for each skill, described below. Its single Markdown file embeds the runtime references and licenses, so files such as extensionless `LICENSE`, `humanizer.LICENSE`, and provider metadata do not need to be uploaded separately.
 
 ## Install skills on this computer
 
@@ -129,7 +138,30 @@ Detection checks CLI commands on PATH, common executable locations, registered W
 
 These targets follow the official [Claude Code](https://code.claude.com/docs/en/skills), [OpenAI](https://learn.chatgpt.com/docs/build-skills), and [Gemini CLI](https://geminicli.com/docs/cli/skills/) skill locations. Claude Cowork and cloud sessions use account-level skills and do not read the personal Claude Code folder. Gemini CLI also discovers `.agents/skills`, so a ChatGPT-targeted copy may be visible to Gemini; that shared alias takes precedence over `.gemini/skills` at the same scope. A matching shared copy is reported as unchanged. If it differs from the source, the Gemini install stops and asks you to update the shared copy first. When both providers are selected with `-Update`, ChatGPT is processed before Gemini.
 
-For a client marked `Manual upload required`, follow the [skill's upload instructions](git-worklog/README.md). Local file copying does not register skills in a web account or Gemini Gem. Application detection reports local evidence; it does not verify account access or client version compatibility.
+For a client marked `Manual upload required`, follow the skill's upload instructions or the Gemini web steps below. Local file copying does not register skills in a web account. Application detection reports local evidence; it does not verify account access or client version compatibility.
+
+### Upload to Gemini web
+
+Google supports a root `SKILL.md`, a folder, or a ZIP with supported reference files. See [Google's skill upload requirements](https://support.google.com/gemini/answer/17094296?co=GENIE.Platform%3DDesktop&hl=en). Some uploader interfaces show a narrower list of file types. Use these Markdown-only exports when a regular package is rejected.
+
+| Skill | Upload this file | Optional ZIP |
+|---|---|---|
+| Humanizer | [SKILL.md](dist/gemini-web/humanizer/SKILL.md) | [humanizer-gemini-web.zip](dist/humanizer-gemini-web.zip) |
+| Git worklog | [SKILL.md](dist/gemini-web/git-worklog/SKILL.md) | [git-worklog-gemini-web.zip](dist/git-worklog-gemini-web.zip) |
+| Council | [SKILL.md](dist/gemini-web/council/SKILL.md) | [council-gemini-web.zip](dist/council-gemini-web.zip) |
+
+In Gemini web, open Customize, then Skills, then Upload. Choose **file** and select one `SKILL.md` from the table. Review the name and instructions, then create the skill. You can instead choose **folder** and select that skill's folder inside `dist/gemini-web/`. Select one skill at a time. Each optional web ZIP contains only `SKILL.md` at the archive root.
+
+These files keep the original skill frontmatter and inline every runtime reference and license. Internal file links point to the embedded sections. Council keeps its Indonesian Gen Z output and source-access disclosures; Git worklog keeps its required date-and-author confirmation. Web exports use the session's available tools and do not install scripts or add browsing capabilities.
+
+Rebuild and verify these exports after updating the regular ZIP/text bundles:
+
+```powershell
+python scripts/build_gemini_web.py
+python scripts/build_gemini_web.py --check
+```
+
+Append a skill name to rebuild only that skill, for example `python scripts/build_gemini_web.py humanizer`.
 
 ### Use Humanizer with each provider
 
@@ -183,8 +215,8 @@ For every new, imported, or changed skill package:
 Run the distribution and installer tests with:
 
 ```powershell
-python -m unittest discover -s tests -p dist_tests.py
+python -m unittest discover -s tests -p '*tests.py'
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tests\installer.tests.ps1
 ```
 
-The tests use temporary fixture homes to cover multi-skill and multi-provider selection, detection, copying, previews, update backups, failure cleanup, and path validation. They also check Windows metadata encodings and install the official Humanizer files for each simulated provider, including its license and OpenAI metadata. They do not change real client installations. The project has no checked-in distribution build script. Package checks establish file integrity and structure; live provider loading must be reported separately.
+The tests use temporary fixture homes to cover multi-skill and multi-provider selection, detection, copying, previews, update backups, failure cleanup, and path validation. They also check Windows metadata encodings and install the official Humanizer files for each simulated provider, including its license and OpenAI metadata. They do not change real client installations. The Gemini web builder checks its Markdown and ZIP exports against the text bundles. Package checks establish file integrity and structure; successful account uploads must be reported separately.

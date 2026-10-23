@@ -14,6 +14,7 @@ These notes apply to Gemini CLI and Gemini coding environments. Shared rules sta
 - PowerShell 5.1 cmdlets like `Set-Content -Encoding utf8` prepend a byte order mark. Write `dist/git-worklog-chat.txt` using Python to maintain UTF-8 without a BOM.
 - Check `git status` before editing root documentation and preserve existing changes. Avoid committing or pushing unless requested.
 - Create both `dist/<skill-name>.zip` and `dist/<skill-name>-chat.txt` whenever creating or importing a skill, and rebuild them when its source changes. Follow AGENTS.md for packaging checks.
+- For Gemini web, run `python scripts/build_gemini_web.py` after rebuilding the text bundles. Upload `dist/gemini-web/<skill-name>/SKILL.md` as a file, or select that skill's folder. Its references and licenses are embedded. Verify the exports with `python scripts/build_gemini_web.py --check`. Local CLI packages and web uploads use separate exports.
 - The user writes in casual Indonesian. Respond in Indonesian in chat, and write files in English except for Git worklog report content.
 - When running or testing the Git worklog workflow, always prompt for the date range and author in chat before invoking `git log`.
 - Update HANDOFF.md before finishing any turn that modifies files, listing the exact checks that were run.

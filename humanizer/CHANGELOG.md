@@ -2,6 +2,8 @@
 
 ## 3.1.0
 
+- Collection packaging: added a Gemini web upload export with the complete instructions and MIT license in one SKILL.md file.
+
 - Collection packaging: removed Claude and Cursor plugin manifests so Humanizer can be uploaded as a standalone skill. Updated installation guidance and package validation; the prompt and MIT license are unchanged.
 - Added pattern #26 and section F for replies that re-explain context the reader already has (#269). It acts on replies, not standalone writing. 26 patterns total.
 - Extended the core rule so "something the reader did not already have" counts the surrounding conversation, not only earlier text.

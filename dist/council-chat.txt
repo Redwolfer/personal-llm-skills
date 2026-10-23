@@ -377,6 +377,8 @@ For a chat that accepts uploaded text, attach `dist/council-chat.txt` from the c
 
 ## Use
 
+For Gemini web's Skills uploader, upload the collection's `dist/gemini-web/council/SKILL.md` as a file. It includes every runtime reference and the Humanizer license. You can also select that one-skill folder or use `dist/council-gemini-web.zip`, whose root contains only `SKILL.md`. The web export keeps the same research, Humanizer, and Indonesian Gen Z output rules without separate provider metadata files.
+
 ```text
 Use council in QUICK mode to compare these two options against my budget.
 ```
